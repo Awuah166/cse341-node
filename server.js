@@ -94,8 +94,10 @@ const server = http.createServer(async (req, res) => {
     }
 });
 
-server.listen(8080, () => {
-    console.log('Server is running on port 8080');
+const port = Number(process.env.PORT) || 8080;
+
+server.listen(port, '0.0.0.0', () => {
+    console.log(`Server is running on port ${port}`);
 });
 
 connectToDatabase().catch((error) => {
