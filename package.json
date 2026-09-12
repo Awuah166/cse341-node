@@ -1,0 +1,24 @@
+{
+  "name": "cse341-node",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Awuah166/cse341-node#readme",
+  "bugs": {
+    "url": "https://github.com/Awuah166/cse341-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Awuah166/cse341-node.git"
+  },
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^7.6.0"
+  }
+}
