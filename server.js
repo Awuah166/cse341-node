@@ -21,6 +21,7 @@ async function connectToDatabase() {
     }
 
     await mongoClient.connect();
+    await mongoClient.db(databaseName).command({ ping: 1 });
     professionalCollection = mongoClient.db(databaseName).collection('professionals');
     console.log(`Connected to MongoDB database: ${databaseName}`);
 }
