@@ -1,6 +1,6 @@
 const http = require('http');
 
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 const professional = {
   professionalName: 'Dennis Awuah',
@@ -39,6 +39,6 @@ const server = http.createServer((request, response) => {
   response.end(JSON.stringify({ error: 'Route not found' }));
 });
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`API server running at http://localhost:${port}`);
 });
