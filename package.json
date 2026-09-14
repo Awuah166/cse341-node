@@ -12,17 +12,8 @@
   },
   "type": "commonjs",
   "main": "index.js",
-  "engines": {
-    "node": "20.x"
-  },
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "node seed.js"
-  },
-  "dependencies": {
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongodb": "^7.6.0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
