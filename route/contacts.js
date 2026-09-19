@@ -1,40 +1,130 @@
 const express = require('express');
-const { getCollection, ObjectId } = require('../db/database');
+
+const {
+  getAllContacts,
+  getContactById,
+  createContact,
+  updateContact,
+  deleteContact,
+} = require('../controllers/contactController');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  try {
-    const collection = await getCollection('contacts');
-    const contacts = await collection.find({}).toArray();
+/**
+ * @swagger
+ * /contacts:
+ *   get:
+ *     summary: Get all contacts
+ *     tags: [Contacts]
+ *     responses:
+ *       200:
+ *         description: A list of contacts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Contact'
+ */
+router.get('/', getAllContacts);
 
-    return res.status(200).json(contacts);
-  } catch (error) {
-    console.error('Error fetching all contacts:', error);
-    return res.status(500).json({ error: 'Failed to fetch contacts' });
-  }
-});
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   get:
+ *     summary: Get a contact by id
+ *     tags: [Contacts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The contact ID
+ *     responses:
+ *       200:
+ *         description: Contact found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Contact'
+ *       400:
+ *         description: Invalid contact ID
+ *       404:
+ *         description: Contact not found
+ */
+router.get('/:id', getContactById);
 
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const collection = await getCollection('contacts');
+/**
+ * @swagger
+ * /contacts:
+ *   post:
+ *     summary: Create a contact
+ *     tags: [Contacts]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ContactInput'
+ *     responses:
+ *       201:
+ *         description: Contact created
+ *       400:
+ *         description: Missing required fields
+ */
+router.post('/', createContact);
 
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid contact ID' });
-    }
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   put:
+ *     summary: Update a contact
+ *     tags: [Contacts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The contact ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ContactInput'
+ *     responses:
+ *       204:
+ *         description: Contact updated successfully
+ *       400:
+ *         description: Invalid contact ID or missing required fields
+ *       404:
+ *         description: Contact not found
+ */
+router.put('/:id', updateContact);
 
-    const contact = await collection.findOne({ _id: new ObjectId(id) });
-
-    if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
-    }
-
-    return res.status(200).json(contact);
-  } catch (error) {
-    console.error('Error fetching contact by id:', error);
-    return res.status(500).json({ error: 'Failed to fetch contact' });
-  }
-});
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   delete:
+ *     summary: Delete a contact
+ *     tags: [Contacts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The contact ID
+ *     responses:
+ *       204:
+ *         description: Contact deleted successfully
+ *       400:
+ *         description: Invalid contact ID
+ *       404:
+ *         description: Contact not found
+ */
+router.delete('/:id', deleteContact);
 
 module.exports = router;
