@@ -1,1 +1,43 @@
-GET http://localhost:8080/professional
+@baseUrl = http://localhost:8080
+@contactId = REPLACE_WITH_ID
+
+### Get all contacts
+GET {{baseUrl}}/contacts
+
+### Get one contact
+GET {{baseUrl}}/contacts/{{contactId}}
+
+### Create contact 
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+    "firstName": "Awuah",
+    "lastName": "Dennis",
+    "email": "awuahdennis20@gmail.com",
+    "favoriteColor": "blue",
+    "birthday": "1999-06-07"
+}
+
+### Update contact
+PUT {{baseUrl}}/contacts/{{contactId}}
+Content-Type: application/json
+
+{
+    "firstName": "Awuah",
+    "lastName": "Dennis",
+    "email": "awuahdennis20@gmail.com"
+    "favoriteColor": "blue",
+    "birthday": "07/06/1999"
+}
+
+### Delete contact
+DELETE {{baseUrl}}/contacts/{{contactId}}
+
+### Invalid ID test
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+    "firstName": "Incomplete"
+}
