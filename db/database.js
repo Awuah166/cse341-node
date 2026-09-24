@@ -1,26 +1,15 @@
-const { MongoClient, ObjectId } = require('mongodb');
-require('dotenv').config();
+const mongoose = require('mongoose');
 
-const mongoUri = process.env.MONGODB_URI;
-const databaseName = process.env.MONGODB_DB || 'professionalDB';
-const defaultCollectionName = 'professionals';
-
-const client = new MongoClient(mongoUri);
-
-async function getCollection(collectionName = defaultCollectionName) {
-  if (!mongoUri) {
-    throw new Error('MONGODB_URI is not defined in the environment variables.');
+async function connectDatabase() {
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI is not defined.');
   }
 
-  if (!client.topology || !client.topology.isConnected()) {
-    await client.connect();
-  }
+  await mongoose.connect(process.env.MONGODB_URI, {
+    dbName: process.env.MONGODB_DB || 'professionalDB',
+  });
 
-  const database = client.db(databaseName);
-  return database.collection(collectionName);
+  console.log('Connected to MongoDB');
 }
 
-module.exports = {
-  getCollection,
-  ObjectId,
-};
+module.exports = connectDatabase;

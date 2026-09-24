@@ -1,112 +1,101 @@
-const { getCollection, ObjectId } = require('../db/database');
+const mongoose = require('mongoose');
+const Contact = require('../models/contact');
 
-async function getAllContacts(req, res) {
+function contactData(body) {
+  const { firstName, lastName, email, favoriteColor, birthday } = body;
+
+  return {
+    firstName,
+    lastName,
+    email,
+    favoriteColor,
+    birthday,
+  };
+}
+
+async function getAllContacts(req, res, next) {
   try {
-    const collection = await getCollection('contacts');
-    const contacts = await collection.find({}).toArray();
-
-    return res.status(200).json(contacts);
+    const contacts = await Contact.find().sort({ lastName: 1 });
+    res.status(200).json(contacts);
   } catch (error) {
-    console.error('Failed to fetch all contacts:', error);
-    return res.status(500).json({ error: 'Failed to fetch contacts' });
+    next(error);
   }
 }
 
-async function getContactById(req, res) {
+async function getContactById(req, res, next) {
   try {
     const { id } = req.params;
-    const collection = await getCollection('contacts');
 
-    if (!ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: 'Invalid contact ID' });
     }
 
-    const contact = await collection.findOne({ _id: new ObjectId(id) });
+    const contact = await Contact.findById(id);
 
     if (!contact) {
       return res.status(404).json({ error: 'Contact not found' });
     }
 
-    return res.status(200).json(contact);
+    res.status(200).json(contact);
   } catch (error) {
-    console.error('Failed to fetch contact by id:', error);
-    return res.status(500).json({ error: 'Failed to fetch contact' });
+    next(error);
   }
 }
 
-async function createContact(req, res) {
+async function createContact(req, res, next) {
   try {
-    const { firstName, lastName, email, favoriteColor, birthday } = req.body;
+    const createdContact = await Contact.create(contactData(req.body));
 
-    if (!firstName || !lastName || !email || !favoriteColor || !birthday) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const collection = await getCollection('contacts');
-    const result = await collection.insertOne({
-      firstName,
-      lastName,
-      email,
-      favoriteColor,
-      birthday,
-    });
-
-    return res.status(201).json({ id: result.insertedId });
+    res.status(201).json(createdContact);
   } catch (error) {
-    console.error('Error creating contact:', error);
-    return res.status(500).json({ error: 'Failed to create contact' });
+    next(error);
   }
 }
 
-async function updateContact(req, res) {
+async function updateContact(req, res, next) {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, favoriteColor, birthday } = req.body;
 
-    if (!ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: 'Invalid contact ID' });
     }
 
-    if (!firstName || !lastName || !email || !favoriteColor || !birthday) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const collection = await getCollection('contacts');
-    const result = await collection.replaceOne(
-      { _id: new ObjectId(id) },
-      { firstName, lastName, email, favoriteColor, birthday }
+    const updatedContact = await Contact.findOneAndReplace(
+      { _id: id },
+      contactData(req.body),
+      {
+        new: true,
+        runValidators: true,
+      }
     );
 
-    if (result.matchedCount === 0) {
+    if (!updatedContact) {
       return res.status(404).json({ error: 'Contact not found' });
     }
 
-    return res.sendStatus(204);
+    res.status(200).json(updatedContact);
   } catch (error) {
-    console.error('Error updating contact:', error);
-    return res.status(500).json({ error: 'Failed to update contact' });
+    next(error);
   }
 }
 
-async function deleteContact(req, res) {
+async function deleteContact(req, res, next) {
   try {
     const { id } = req.params;
 
-    if (!ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: 'Invalid contact ID' });
     }
 
-    const collection = await getCollection('contacts');
-    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+    const deletedContact = await Contact.findByIdAndDelete(id);
 
-    if (result.deletedCount === 0) {
+    if (!deletedContact) {
       return res.status(404).json({ error: 'Contact not found' });
     }
 
-    return res.sendStatus(204);
+    res.sendStatus(204);
   } catch (error) {
-    console.error('Error deleting contact:', error);
-    return res.status(500).json({ error: 'Failed to delete contact' });
+    next(error);
   }
 }
 

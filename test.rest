@@ -26,18 +26,48 @@ Content-Type: application/json
 {
     "firstName": "Awuah",
     "lastName": "Dennis",
-    "email": "awuahdennis20@gmail.com"
+    "email": "awuahdennis20@gmail.com",
     "favoriteColor": "blue",
-    "birthday": "07/06/1999"
+    "birthday": "1999-06-07"
 }
 
 ### Delete contact
 DELETE {{baseUrl}}/contacts/{{contactId}}
 
-### Invalid ID test
+### Invalid contact ID
+GET {{baseUrl}}/contacts/not-an-object-id
+
+### Missing required field
 POST {{baseUrl}}/contacts
 Content-Type: application/json
 
 {
     "firstName": "Incomplete"
 }
+
+### Invalid email
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+    "firstName": "Awuah",
+    "lastName": "Dennis",
+    "email": "not-an-email",
+    "favoriteColor": "blue",
+    "birthday": "1999-06-07"
+}
+
+### Invalid birthday format
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Awuah",
+  "lastName": "Dennis",
+  "email": "awuahdennis20@gmail.com",
+  "favoriteColor": "blue",
+  "birthday": "07/06/1999"
+}
+
+### Nonexistent valid ID
+GET {{baseUrl}}/contacts/64f0d7c5d4d27b4f1a1b2c3d
